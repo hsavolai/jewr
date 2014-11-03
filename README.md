@@ -1,7 +1,7 @@
 jewr
 ====
 
-"Jar-Eer-War-Rar", the java archive manager tool.
+"Jar-Ear-War-Rar", the java archive manager tool.
 
 Requires jar command in package update
 
