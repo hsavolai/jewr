@@ -104,7 +104,8 @@ class JarEarWarRar(object):
                 "bin" + os.sep + "jar"
             jar_set = True
 
-        self.jar_command = "/usr/bin/jar"
+        if not jar_set:
+            self.jar_command = "/usr/bin/jar"
         if not os.path.isfile(self.jar_command):
             raise IOError(self.jar_command+" not found!")
 
@@ -297,8 +298,7 @@ def test(test_name=None):
 
             mock_popen.assert_called_with(["/usr/bin/jar", "uf", "foo.ear",
                                            "-C", "/tmp", "foo" + os.sep +
-                                           "bar.jar"], stdout=-1)
-
+                                           "bar.jar"], stdout=-1, stderr=-1)
             mock_popen.return_value.communicate.return_value = ("Oops",
                                                                 "Error")
             self.assertRaises(IOError, tool.update_file, "foo.ear", "foo" +
@@ -316,12 +316,13 @@ def test(test_name=None):
             self.assertEquals(tool.jar_command, jar_location+os.sep+"jar")
 
             with mock.patch.dict('os.environ', {'JAVA_HOME': os.sep +
-                                 "java" + os.sep + "home"+os.sep+"here"},
+                                 "java" + os.sep + "home" + os.sep + "here"},
                                  clear=True):
                 tool = JarEarWarRar()
                 tool.set_jar_path()
                 self.assertEquals(tool.jar_command, os.sep + "java" + os.sep +
-                                  "home"+os.sep+"here" + os.sep + 'jar')
+                                  "home"+os.sep+"here" + os.sep + "bin" +
+                                  os.sep + 'jar')
             with mock.patch.dict('os.environ', {'JEWR_JAVA_HOME': os.sep +
                                  "java" + os.sep + "home"+os.sep+"here"},
                                  clear=True):
@@ -634,7 +635,7 @@ def test(test_name=None):
             with mock.patch('sys.stdout', devnull):
                 with mock.patch('sys.stderr', devnull):
                     with mock.patch.object(sys, 'argv', ['app.py',
-                                           'foo.jar/foo.properties']):
+                                           'foo.jar/foo.properties', '-v']):
                         self.assertRaises(IOError, main)
 
     if test_name is None:
