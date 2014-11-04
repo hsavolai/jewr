@@ -41,10 +41,13 @@ class JarEarWarRar(object):
     tmp_dir = ""
     destination_dir = None
     jar_command = ""
+    verbosity = False
 
     # pylint: disable=no-self-use
     def extract_file(self, file_name, target_file, target_dir):
         """docstring for Method"""
+        if self.verbosity:
+            print("Processing exctract..."+file_name)
         contents = zipfile.ZipFile(file_name, 'r')
         files = [elem for elem in contents.namelist() if not elem.endswith(
             os.sep)]
@@ -57,9 +60,12 @@ class JarEarWarRar(object):
 
     def update_file(self, file_name, archive_path, target_dir):
         """docstring for Method"""
+        if self.verbosity:
+            print("Processing repack..."+file_name)
         process = subprocess.Popen([self.jar_command, 'uf', file_name,
                                    '-C', target_dir, archive_path],
-                                   stdout=subprocess.PIPE)
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE)
         out, err = process.communicate()
         issue_triggered = False
         error_msg = ""
@@ -86,24 +92,24 @@ class JarEarWarRar(object):
 
     def set_jar_path(self, jar_command_path=None):
         """docstring for Method"""
+        jar_set = False
         if jar_command_path is not None:
             self.jar_command = jar_command_path + os.sep + "jar"
-            if not os.path.isfile(self.jar_command):
-                raise IOError(self.jar_command+" not found!")
-            return True
-        if 'JEWR_JAVA_HOME' in os.environ:
+            jar_set = True
+        if not jar_set and 'JEWR_JAVA_HOME' in os.environ:
             self.jar_command = os.environ['JEWR_JAVA_HOME'] + os.sep + "jar"
-            if not os.path.isfile(self.jar_command):
-                raise IOError(self.jar_command+" not found!")
-            return True
-        if 'JAVA_HOME' in os.environ:
-            self.jar_command = os.environ['JAVA_HOME'] + os.sep + "jar"
-            if not os.path.isfile(self.jar_command):
-                raise IOError(self.jar_command+" not found!")
-            return True
+            jar_set = True
+        if not jar_set and 'JAVA_HOME' in os.environ:
+            self.jar_command = os.environ['JAVA_HOME'] + os.sep +\
+                "bin" + os.sep + "jar"
+            jar_set = True
+
         self.jar_command = "/usr/bin/jar"
         if not os.path.isfile(self.jar_command):
             raise IOError(self.jar_command+" not found!")
+
+        if self.verbosity:
+            print("Using jar tool:"+self.jar_command)
         return True
 
     def set_temp_dir(self, temp_dir=None):
@@ -688,11 +694,14 @@ def main():
     parser.add_argument('--replace', default=None, help="File name with path \
                         when replacing the file inside the archieve structure\
                         ")
+    parser.add_argument('-v', default=False, help="Add verbosity",
+                        action='store_true')
 
     args = parser.parse_args()
 
     try:
         tool = JarEarWarRar()
+        tool.verbosity = args.v
         tool.set_destination_dir(args.destdir)
         tool.set_temp_dir(args.tempdir)
         if args.replace is None:
@@ -704,8 +713,9 @@ def main():
                 tool.set_jar_path(args.jarpath)
             tool.process_file_update(args.path, args.replace)
     except:
-        print("Error occured! Please see the messages.")
-        raise
+        print("Error occured! Please see the messages with -v")
+        if tool.verbosity:
+            raise
     finally:
         tool.clean_tmp_dir()
 
