@@ -1,19 +1,19 @@
 JEWR
 ====
 
-A tool to **"chew"** java archives, JEWR (pronounced as '*Chewer*'). JEWR is short for the suppoerted java archive types: JAR, EAR, WAR and RAR.
+A tool to **"chew"** java archives, **JEWR** (pronounced as '*Chewer*'). JEWR is short for the supported java archive types: JAR, EAR, WAR and RAR.
 
 PREFACE
 ------
-Simplifies post-management of java archives. Typical use-cases include listing files inside deep hierarchical package structure, extracting configuration files (or any othere files) from the archives and replacing existing files to package structure. Supersedes sequential jar -xf, jar -uf and jar -tf sequences. Manages creation and deletion of temporary directories and automates other tasks to extract and repack files within java archives and their sub-archives without depth limitations.
+Simplifies post-management of java archives. Typical use-cases include the listing of files inside deep hierarchical package structure, extracting the configuration files (or any other files) from the archives and replacing the existing files inside package structure. Supersedes sequential jar -xf, jar -uf and jar -tf sequences. Manages creation and deletion of temporary directories and automates the other tasks to extract and repack files within java archives and their sub-archives without depth limitations.
 
 FEATURES
 --------
-- Manages packages inside of packages of any depth
+- Manages the archives inside the archives of any depth
 - Extracting a single file from the package structure
 - Replacing a single file in any package structure
-- Listing the files in any package structure
-- A simple detection of jar command location
+- Listing the files in the any archive structure
+- A simple detection of the jar command location
 - Auto-setting of the temporary directory
 
 PRE-REQUIREMENTS
